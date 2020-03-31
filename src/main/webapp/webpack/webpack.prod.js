@@ -63,8 +63,7 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             toplevel: true
           }
         }
-      }),
-      new OptimizeCSSAssetsPlugin({})
+      })
     ]
   },
   plugins: [
