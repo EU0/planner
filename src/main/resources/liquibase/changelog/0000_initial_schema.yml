@@ -1,0 +1,158 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: create user table
+      author: Buryakov E.
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_hash
+                  type: varchar(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(60)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: last_name
+                  type: varchar(60)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: email
+                  type: varchar(191)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: activated
+                  type: boolean
+                  valueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_modified_by
+                  type: varchar(60)
+              - column:
+                  name: last_modified_date
+                  type: timestamp
+            uniqueConstraints:
+              - uniqueConstraint:
+                  name: ux_user_login
+                  keyColumns:
+                    - keyColumn:
+                        name: login
+              - uniqueConstraint:
+                  name: ux_user_email
+                  keyColumns:
+                    - keyColumn:
+                        name: email
+        - createSequence:
+            dataType: bigint
+            incrementBy: 1
+            startValue: 3
+            sequenceName: user_id_seq
+        - addDefaultValue:
+            tableName: user
+            columnName: id
+            defaultValueSequenceNext: user_id_seq
+
+  - changeSet:
+      id: create authority table
+      author: Buryakov E.
+      changes:
+        - createTable:
+            tableName: authority
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(60)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
+      id: create user_authority table
+      author: Buryakov E.
+      changes:
+        - createTable:
+            tableName: user_authority
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: authority_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_authority
+            constraintName: fk_user_authority_user_id
+            referencedColumnNames: id
+            referencedTableName: user
+        - addForeignKeyConstraint:
+            baseColumnNames: authority_id
+            baseTableName: user_authority
+            constraintName: fk_user_authority_authority_id
+            referencedColumnNames: id
+            referencedTableName: authority
+  - changeSet:
+      id: create authority data
+      author: Buryakov E.
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  value: 1
+              - column:
+                  name: name
+                  type: varchar(60)
+                  value: USER
+            tableName: authority
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  value: 2
+              - column:
+                  name: name
+                  type: varchar(60)
+                  value: ADMIN
+            tableName: authority
